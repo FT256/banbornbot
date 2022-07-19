@@ -27,11 +27,6 @@ async def send_welcome(message: types.Message):
             await message.answer("Привет!\nЭто группа не находится в списке разрешенных!\nБот будет удален!")
             await bot.leave_chat(chat_id=message.chat.id)
 
-@dp.message_handler(content_types=["any"])
-async def ban_anon_channel(message: types.Message):
-    if message.from_user.first_name == "Channel" and message.sender_chat.id not in config.channel_whitelist:
-        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-
 @dp.message_handler(content_types=["new_chat_members"])
 async def user_joined_chat(message: types.Message):
     await message.delete()
@@ -158,6 +153,11 @@ async def cmd_unreadonly(message: types.Message):
         await message.answer("Пользователь " + f_name + " (@" + username + ") размучен")
     else:
         await message.answer("Пользователь " + f_name + " " + l_name + " (@" + username + ") размучен")
-
+        
+@dp.message_handler(content_types=["any"])
+async def ban_anon_channel(message: types.Message):
+    if message.from_user.first_name == "Channel" and message.sender_chat.id not in config.channel_whitelist:
+        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
